@@ -6,9 +6,11 @@ import os
 # load input contents from user
 def user_input():
     # you can change the path here or use [-p <path>] <command>
-    path = r'D:\Downloads\title.ratings.tsv\ratings.csv'
-    _input = input()
-    input_list = _input.strip().split()
+    path = r'./data/ratings.csv'
+    input_list = sys.argv[1:]
+    if len(input_list) == 0:
+        while len(input_list) == 0:
+            input_list = input("Please input the commmand:\n").strip().split()
     if len(input_list) != 3 and len(input_list) != 1:
         print('Numbers of parameters are not right')
         sys.exit()
@@ -79,6 +81,8 @@ def main():
             else:
                 if data[_key] != _value:
                     print("False")
+                    print(one_line)
+                    print(data[_key])
                     return
         print('True')
 
