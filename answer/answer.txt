@@ -1,0 +1,22 @@
+The answers for creating two tables:
+
+
+CREATE TABLE basics (
+    tconst varchar(50) PRIMARY KEY,
+    titletype varchar(20),
+    primarytitle varchar(600),
+    originaltitle varchar(600),
+    isadult boolean,
+    startyear smallint,
+    endyear varchar(10),
+    runtimeminutes varchar(10),
+    genres varchar(20)[]
+);
+
+
+
+CREATE TABLE ratings (
+    tconst varchar(50) PRIMARY KEY,
+    averagerating numeric(3,1),
+    numvotes integer
+);
