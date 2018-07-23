@@ -1,12 +1,13 @@
 # 2400Lab
-## 1.Import CSV Files into PostgreSQL
+## Task1: Import CSV Files into PostgreSQL
 The first lab is designed to let students learn how to import outfiles into databases.
-### Download the Data
+
+### 1) Download the Data
 First, you need to download the files to your computer. 
 
 You can either:
 
-Use the green **Download** button in the top right corner;
+Use the green **Clone or Download** button in the top right corner;
 
 Or use the `git` commands:
 
@@ -15,21 +16,53 @@ Or use the `git` commands:
 3. In the cmd.exe, use commands `mkdir <directory name>` to make a directory storing the data
 4. Use `cd <directory name>` to enter the directory
 5. Use `git clone <url>` to download the data to your directory
-  
-### Link to the Partch
-We need to use partch to use the database. To load the data to the PostgreSQL, you need to:
+
+</br>
+
+### 2) Link to the Partch
+We need to use partch to use the database. 
+
+In **Linux**:
+
+Open the terminal and use command
+
+    ssh u1234567@partch.anu.edu.au
+
+to log in the partch.
+
+
+</br>
+
+
+In **Windows**:
 
 1. Search the **putty** in the search window, which is introduced in the last step, and open the PuTTY.exe, which can help you establish a ssh connection between your computer and the partch server.
 2. In the HostName blank, enter your student ID: *u1234567@partch.anu.edu.au*, choose SSH for connection type, click *open*
 
 Then input your password, and you can link to the partch
 
-### Load Data to PostgreSQL
+</br>
+
+### 3) Load Data to PostgreSQL
 To load the data, we first need to copy the data to the partch server. To do this, you can:
 
 - Use the `git` commands introduced before in the putty command window to clone the files to the server
 
 Or:
+
+In **Linux**:
+
+- Open terminal, enter command:
+
+      scp <path stored csv data> u1234567@partch.anu.edu.au:<path in the server that you want to store the data>
+      
+    For example:
+    
+      scp ~/2400Lab/data/basics.csv u1234567@partch.anu.edu.au:~/comp2400lab
+      
+</br>
+
+In **Windows**:
 
 - Open cmd.exe, enter command:
 
@@ -39,7 +72,7 @@ Or:
 
       pscp D:\2400Lab\data\basics.csv u1234567@partch.anu.edu.au:~\comp2400lab
 
-The pscp command can copy the file from your computer to the remote server, you can enter `pscp` to see other options.
+The scp/pscp command can copy the file from your computer to the remote server, you can enter `man scp`/`pscp` to see other options.
 
 After copying the data, we use `psql` to enter the database. In this lab, we need to copy two csv file in to the database, so we firstly create a new table named *basics*, the schema is shown below:
 
@@ -67,13 +100,17 @@ Then we create a table named *ratings*, the schema is shown below:
 
 with primary key *tconst*
 
+**Note**: If you don't know how to create those two table, the answer is in the `answer` file.
+
 Finally, we can use `\copy` command to load the csv files into the table. An example could be:
 
     \copy ratings from '~/comp2400lab/data/ratings.csv' delimiter ',' CSV Header;
 
 You can find more specific details about `copy` command [here](http://www.postgres.cn/docs/9.3/sql-copy.html)
 
-## 2.Check Functional Dependencies
+</br>
+
+## Task2: Check Functional Dependencies
 The second lab is to learn about functional dependencies.
 
 There is a simple python program named *FDchecker.py*, you should clone or download it to your computer (not the partch server).
@@ -90,6 +127,8 @@ This will let program find csv file in the giving path and try to check whether 
 
 You can change the default path in the program, so that you don't need to enter the path every time.
 
-## 3.Query Processing and Optimisation
+It allows user to input several times, input `exit` to exit.
 
-## 4.Use SQL to Answer Simple Questions
+## Task3: Query Processing and Optimisation
+
+## Task4: Use SQL to Answer Simple Questions
