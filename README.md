@@ -7,15 +7,25 @@ First, you need to download the files to your computer.
 
 You can either:
 
-Use the green **Clone or Download** button in the top right corner;
+Use the green **Clone or Download** button in the top right corner and then unzip it;
 
 Or use the `git` commands:
+
+In **Linux**:
+
+1. Click the terminal to open the Terminal
+2. In the terminal, use commands `mkdir <directory name>` to make a directory storing the data
+3. Use `cd <directory name>` to enter the directory
+4. Use `git clone https://github.com/sjmsjmdsg/2400Lab.git` to download the data to your directory 
+
+
+In **Windows**:
 
 1. Click the **Windows** button in the bottom left corner in your computer, and find the **search** button
 2. Search **CMD**, which represents command prompt, and press enter, this will open the cmd.exe, which will help you transform the data to the partch server.
 3. In the cmd.exe, use commands `mkdir <directory name>` to make a directory storing the data
 4. Use `cd <directory name>` to enter the directory
-5. Use `git clone <url>` to download the data to your directory
+5. Use `git clone https://github.com/sjmsjmdsg/2400Lab.git` to download the data to your directory
 
 </br>
 
@@ -39,6 +49,8 @@ In **Windows**:
 1. Search the **putty** in the search window, which is introduced in the last step, and open the PuTTY.exe, which can help you establish a ssh connection between your computer and the partch server.
 2. In the HostName blank, enter your student ID: *u1234567@partch.anu.edu.au*, choose SSH for connection type, click *open*
 
+</br>
+
 Then input your password, and you can link to the partch
 
 </br>
@@ -46,19 +58,19 @@ Then input your password, and you can link to the partch
 ### 3) Load Data to PostgreSQL
 To load the data, we first need to copy the data to the partch server. To do this, you can:
 
-- Use the `git` commands introduced before in the putty command window to clone the files to the server
+- Use the `git` commands introduced before in the linux terminal/putty command window to clone the files to the server
 
 Or:
 
 In **Linux**:
 
-- Open terminal, enter command:
+- Open a new terminal, enter command:
 
       scp <path stored csv data> u1234567@partch.anu.edu.au:<path in the server that you want to store the data>
       
     For example:
     
-      scp ~/2400Lab/data/basics.csv u1234567@partch.anu.edu.au:~/comp2400lab
+      scp /students/u1234567/2400Lab-master/data/basics.csv u1234567@partch.anu.edu.au:~/comp2400lab
       
 </br>
 
@@ -70,7 +82,7 @@ In **Windows**:
 
     For example: 
 
-      pscp D:\2400Lab\data\basics.csv u1234567@partch.anu.edu.au:~\comp2400lab
+      pscp D:\2400Lab-master\data\basics.csv u1234567@partch.anu.edu.au:~\comp2400lab
 
 The scp/pscp command can copy the file from your computer to the remote server, you can enter `man scp`/`pscp` to see other options.
 
@@ -115,17 +127,19 @@ The second lab is to learn about functional dependencies.
 
 There is a simple python program named *FDchecker.py*, you should clone or download it to your computer (not the partch server).
 
-In the cmd.exe, use command `python` to run it, the specific command is:
+**Note**: it can only run under python3 rather than python2.
 
-    python FDchecker.py [-p <path>] num,num...->num,num...
+In the linux terminal/cmd.exe, use command `python3` to run it, the specific command is:
+
+    python3 FDchecker.py [-p <path>] num,num...->num,num...
     
 For example,
 
-    python FDchecker.py -p D:\Downloads\title.ratings.tsv\ratings.csv 1,2->3
+    python3 FDchecker.py -p D:\Downloads\title.ratings.tsv\ratings.csv 1,2->3
     
 This will let program find csv file in the giving path and try to check whether the column 1 and 2 can decide column or not.
 
-You can change the default path in the program, so that you don't need to enter the path every time.
+You can change the default path in the program, so that you don't need to enter the path every time，the default path is oriented to the basics table in the data file.
 
 It allows user to input several times, input `exit` to exit.
 
