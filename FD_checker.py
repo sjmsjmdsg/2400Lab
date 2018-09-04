@@ -39,8 +39,8 @@ def main():
 
         # check the correctness of commands
         try:
-            determinant_list = _input.split('->')[0].split(',')
-            dependent_list = _input.strip('\r\n').split('->')[1].split(',')
+            determinant_list = _input.split('-')[0].split(',')
+            dependent_list = _input.strip('\r\n').split('-')[1].split(',')
         except IndexError:
             print('Error: Format of command is not right')
             sys.exit()
