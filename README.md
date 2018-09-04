@@ -72,6 +72,10 @@ In **Linux**:
     
       scp /students/u1234567/2400Lab-master/data/basics.csv u1234567@partch.anu.edu.au:~/comp2400lab
       
+    If you want to copy the whole directory, then:
+    
+      scp -r /students/u1234567/2400Lab-master/data u1234567@partch.anu.edu.au:~/comp2400lab
+      
 </br>
 
 In **Windows**:
@@ -118,7 +122,7 @@ Finally, we can use `\copy` command to load the csv files into the table. An exa
 
     \copy ratings from '~/comp2400lab/data/ratings.csv' delimiter ',' CSV Header;
 
-You can find more specific details about `copy` command [here](http://www.postgres.cn/docs/9.3/sql-copy.html)
+You can find more specific details about `copy` command [here](http://www.postgres.cn/docs/9.3/sql-copy.html)[1]
 
 </br>
 
@@ -131,11 +135,11 @@ There is a simple python program named *FDchecker.py*, you should clone or downl
 
 In the linux terminal/cmd.exe, use command `python3` to run it, the specific command is:
 
-    python3 FDchecker.py [-p <path>] num,num...->num,num...
+    python3 FD_checker.py [-p <path>] num,num...-num,num...
     
 For example,
 
-    python3 FDchecker.py -p D:\Downloads\title.ratings.tsv\ratings.csv 1,2->3
+    python3 FD_checker.py -p D:\Downloads\title.ratings.tsv\ratings.csv 1,2-3
     
 This will let program find csv file in the giving path and try to check whether the column 1 and 2 can decide column or not.
 
@@ -146,3 +150,7 @@ It allows user to input several times, input `exit` to exit.
 ## Task3: Query Processing and Optimisation
 
 ## Task4: Use SQL to Answer Simple Questions
+
+## Reference
+
+
