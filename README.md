@@ -148,7 +148,80 @@ You can change the default path in the program, so that you don't need to enter 
 It allows user to input several times, input `exit` to exit.
 
 ## Task3: Query Processing and Optimisation
+The third lab is to learn about index.
 
+Through psql documentation, index is a method that can improve the searching speed of database []. Basically, the index will let database management system stores the disk address or data itself in special structure that can save the time of reading info from disk. Without index, the DBMS has to search the data by sequence so it will be very slow when searching the data among millions of rows. Through psql document, by default, the `CREATE INDEX` command will create B-tree index, but it also supports many other structures, which can be check [here](https://www.postgresql.org/docs/9.2/static/indexes-types.html) [].  Meanwhile, because index requires data storing in structure, it will also decrease the performance of inserting/updating/deleting the rows. We will try to see the effect of index in the following lab.
+
+### 1) Searching Operation
+
+In this part, we will see the effect of index in searching.
+
+First, use `\timing` command to open the timer, so you can see the sql operation time now. You can type it again to close the timer.
+
+Second, let's create an index. You can use following command to create an index. 
+
+    CREATE [ UNIQUE ] INDEX [ CONCURRENTLY ] [ name ] ON table [ USING method ]
+        ( { column | ( expression ) } [ COLLATE collation ] [ opclass ] [ ASC | DESC ] [ NULLS { FIRST | LAST } ] [, ...] )
+        [ WITH ( storage_parameter = value [, ... ] ) ]
+        [ TABLESPACE tablespace ]
+        [ WHERE predicate ]
+        
+In this part, we first create an index on `genres` attribute of table basics. It is varchar[] type and the content is long, so we can see the effect of index clearly. For example:
+
+    CREATE INDEX ON basics(genres);
+    
+Then we use the following command to search amount of rows that genres is '{Action,Adventure,Animation}':
+
+    SELECT COUNT(genres) FROM basics WHERE genres = '{Action,Adventure,Animation}';
+    
+How much time does DBMS need to search the result? Remember that time.
+
+Now let's drop the index. using the following command:
+
+    DROP INDEX [ IF EXISTS ] name [, ...] [ CASCADE | RESTRICT ]
+
+First, we need to search the *name* of the index we just created, we can use `\d` command.
+
+    \d basics
+    
+By default, the name of index is "table_name + attr_name + idx", so here the index name can be "basics_genres_idx". We just drop it:
+
+    DROP INDEX basics_genres_idx;
+    
+Now, let's do the same searching again. Could you find the difference between two times? This table is small, assume we have a table will millions of rows that needs about an hour to search an outcome, how much time do we need after using index? 
+
+However, although usually the index can improve the effect of searching, but this may not be true when the table size is small. Now, let's do another searching:
+
+    SELECT COUNT(startyear) FROM basics WHERE startyear < 2009;
+
+Now let's create another index on attribute `startyear` and do the search again. Does the speed become faster?
+
+**Note:** the allocation of disk address for data is random for psql, so the result can be varied. You can try different years to see the difference. I cannot ensure you can see the different outcome.
+
+If the speed is not faster, then why? Let's use another command `EXPLAIN ANALYZE` to anslyse the process:
+
+    EXPLAIN ANALYZE SELECT COUNT(startyear) FROM basics WHERE startyear < 2009;
+    
+Then we may see a tree structure like below:
+
+      Finalize Aggregate  (cost=23503.24..23503.25 rows=1 width=8) (actual time=187.940..187.940 rows=1 loops=1)
+       ->  Gather  (cost=23503.02..23503.23 rows=2 width=8) (actual time=187.932..187.937 rows=3 loops=1)
+             Workers Planned: 2
+             Workers Launched: 2
+             ->  Partial Aggregate  (cost=22503.02..22503.03 rows=1 width=8) (actual time=100.149..100.149 rows=1 loops=3)
+                   ->  Parallel Seq Scan on basics  (cost=0.00..21903.18 rows=239936 width=2) (actual time=0.095..89.823 rows=193081 loops=3)
+                         Filter: (startyear < 2009)
+                         Rows Removed by Filter: 120338
+     Planning time: 0.079 ms
+     Execution time: 205.960 ms
+     
+This command can show the sql executing process from bottom to top. From *actual time* column, we can see the executing time in ms. If you see *Parallel Seq Scan*, that means the index is not used. If you see *Index Cond*, that means index is used. You can change the years to see different outcome. Sometimes the index may be not used even you create it. That because psql can automatically choose the optimal executing process, so when the table size is small, psql can choose to ignore the index [].
+
+You can also change *<* to *=* to see the differnece. When the table is small, the index searching time can be slower than parallel searching time sometimes, so the index cannot speed up the searching under this situation.
+
+### 2) Insert/Delete Operation
+
+In this part, we will see the effect of insert/delete rows of index.
 ## Task4: Use SQL to Answer Simple Questions
 
 ## Reference
