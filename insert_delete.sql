@@ -7,7 +7,7 @@ DECLARE
 BEGIN
 
 	LOOP
-	EXIT WHEN counter = 10000;
+	EXIT WHEN counter = 100000;
 		counter := counter + 1;
 		INSERT INTO basics VALUES(pri_key, CONCAT('tvEpisode', pri_key), '', '', false, 0, '', '130', CONCAT('{', 'Action', ',', 'Adventure', ',', 'Animation', ',',  letter, '}') :: VARCHAR[]);
 		pri_key := CAST(CAST(pri_key AS INTEGER) + 1 AS VARCHAR);
@@ -18,7 +18,7 @@ BEGIN
 	pri_key := '0';
 	
 	LOOP
-	EXIT WHEN counter = 10000;
+	EXIT WHEN counter = 100000;
 		counter := counter + 1;
 		DELETE FROM basics WHERE tconst = pri_key;
 		pri_key := CAST(CAST(pri_key AS INTEGER) + 1 AS VARCHAR);
