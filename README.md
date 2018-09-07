@@ -222,6 +222,19 @@ You can also change *<* to *=* to see the differnece. When the table is small, t
 ### 2) Insert/Delete Operation
 
 In this part, we will see the effect of insert/delete rows of index.
+
+You can find a file named *insert_delete.sql*, it is PL/pgSQL code which can insert and delete 100,000 rows to the basic. For the details of PL/pgSQL code, you can find info [here](https://postgres.cz/wiki/PL/pgSQL_(en)#Introduction_into_PL.2FpgSQL_language) []. However, it is not included in this course.
+
+Now, lets move all the indexes, and type `\i insert/delete.sql`. Remember the execute time.
+
+Then, we add index to attribute `genres`, and execute the code again. Does the insert/delete time change?
+
+Finally, we add another index to attribute `titletype`, and execute the code again. Does the insert/delete time change again?
+
+From the experiment above, we can see that index will slow the insert/delete process for it should maintain the index structure when the insert operation is executed. This will consume extra time.
+
+Consequently, using index when it can truly improve the performance of the database operation, like when the table size is large and searching sql is required a lot!
+
 ## Task4: Use SQL to Answer Simple Questions
 
 ## Reference
