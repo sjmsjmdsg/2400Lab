@@ -2,35 +2,8 @@
 ## Task1: Import CSV Files into PostgreSQL
 The first lab is designed to let students learn how to import outfiles into databases.
 
-### 1) Download the Data
-First, you need to download the files to your computer. 
-
-You can either:
-
-Use the green **Clone or Download** button in the top right corner and then unzip it;
-
-Or use the `git` commands:
-
-In **Linux**:
-
-1. Click the terminal to open the Terminal
-2. In the terminal, use commands `mkdir <directory name>` to make a directory storing the data
-3. Use `cd <directory name>` to enter the directory
-4. Use `git clone https://github.com/sjmsjmdsg/2400Lab.git` to download the data to your directory 
-
-
-In **Windows**:
-
-1. Click the **Windows** button in the bottom left corner in your computer, and find the **search** button
-2. Search **CMD**, which represents command prompt, and press enter, this will open the cmd.exe, which will help you transform the data to the partch server.
-3. In the cmd.exe, use commands `mkdir <directory name>` to make a directory storing the data
-4. Use `cd <directory name>` to enter the directory
-5. Use `git clone https://github.com/sjmsjmdsg/2400Lab.git` to download the data to your directory
-
-</br>
-
-### 2) Link to the Partch
-We need to use partch to use the database. 
+### 1) Link to the Partch
+We need to use partch to execute the whole lab. 
 
 In **Linux**:
 
@@ -40,57 +13,29 @@ Open the terminal and use command
 
 to log in the partch.
 
-
-</br>
-
-
-In **Windows**:
-
-1. Search the **putty** in the search window, which is introduced in the last step, and open the PuTTY.exe, which can help you establish a ssh connection between your computer and the partch server.
-2. In the HostName blank, enter your student ID: *u1234567@partch.anu.edu.au*, choose SSH for connection type, click *open*
-
 </br>
 
 Then input your password, and you can link to the partch
 
 </br>
 
-### 3) Load Data to PostgreSQL
-To load the data, we first need to copy the data to the partch server. To do this, you can:
+### 2) Download the Data
+Then, you need to download the files to your computer. 
 
-- Use the `git` commands introduced before in the linux terminal/putty command window to clone the files to the server
+You can use the `git` commands:
 
-Or:
+In **Partch Shell**:
 
-In **Linux**:
+1. Use commands `mkdir <directory name>` to make a directory storing the data, for example, `mkdir 2400lab`
+2. Use `cd <directory name>` to enter the directory
+3. Use `git clone https://github.com/sjmsjmdsg/2400Lab.git` to download the data to your directory 
 
-- Open a new terminal, enter command:
+The whole file is about 500MB.
 
-      scp <path stored csv data> u1234567@partch.anu.edu.au:<path in the server that you want to store the data>
-      
-    For example:
-    
-      scp /students/u1234567/2400Lab-master/data/basics.csv u1234567@partch.anu.edu.au:~/comp2400lab
-      
-    If you want to copy the whole directory, then:
-    
-      scp -r /students/u1234567/2400Lab-master/data u1234567@partch.anu.edu.au:~/comp2400lab
-      
 </br>
 
-In **Windows**:
-
-- Open cmd.exe, enter command:
-
-      pscp <path stored csv data> u1234567@partch.anu.edu.au:<path in the server that you want to store the data>
-
-    For example: 
-
-      pscp D:\2400Lab-master\data\basics.csv u1234567@partch.anu.edu.au:~\comp2400lab
-
-The scp/pscp command can copy the file from your computer to the remote server, you can enter `man scp`/`pscp` to see other options.
-
-After copying the data, we use `psql` to enter the database. In this lab, we need to copy two csv file in to the database, so we firstly create a new table named *basics*, the schema is shown below:
+### 3) Load Data to PostgreSQL
+To load the data, we first use `psql` to enter the database. Then, we need to create tables for loading csv files in to the database, so we should firstly create a new table named *basics*, the schema is shown below:
 
 |Column|Type|
 |------|------|
@@ -122,7 +67,7 @@ Finally, we can use `\copy` command to load the csv files into the table. An exa
 
     \copy ratings from '~/comp2400lab/data/ratings.csv' delimiter ',' CSV Header;
 
-You can find more specific details about `copy` command [here](http://www.postgres.cn/docs/9.3/sql-copy.html)[1]
+You can find more specific details about `copy` command [here](https://www.postgresql.org/docs/9.2/static/sql-copy.html)[1]
 
 </br>
 
@@ -170,6 +115,8 @@ In this part, we first create an index on `genres` attribute of table basics. It
 
     CREATE INDEX ON basics(genres);
     
+Since the DBMS has to generate the specific data format for storing data, this process can spend some time. 
+
 Then we use the following command to search amount of rows that genres is '{Action,Adventure,Animation}':
 
     SELECT COUNT(genres) FROM basics WHERE genres = '{Action,Adventure,Animation}';
@@ -245,15 +192,15 @@ Now, drop all the indexes and create a multi-indexes on basics's attributes `gen
     
 Now, try to execute five commands below:
 
-    EXPLAIN ANALYZE SELECT * FROM basics WHERE genres = '{Adult}' AND titletype = 'tvEpisode';
+    EXPLAIN ANALYZE SELECT * FROM basics WHERE genres = '{Animation,Short}' AND titletype = 'short';
 
-    EXPLAIN ANALYZE SELECT * FROM basics WHERE genres = '{Adult}';
+    EXPLAIN ANALYZE SELECT * FROM basics WHERE genres = '{Animation,Short}';
 
-    EXPLAIN ANALYZE SELECT * FROM basics WHERE titletype = 'tvEpisode';
+    EXPLAIN ANALYZE SELECT * FROM basics WHERE titletype = 'short';
 
-    EXPLAIN ANALYZE SELECT * FROM basics WHERE titletype = 'tvEpisode' AND genres = '{Adult}';
+    EXPLAIN ANALYZE SELECT * FROM basics WHERE titletype = 'short' AND genres = '{Animation,Short}';
     
-    EXPLAIN ANALYZE SELECT * FROM basics WHERE genres = '{Adult}' OR titletype = 'tvEpisode';
+    EXPLAIN ANALYZE SELECT * FROM basics WHERE genres = '{Animation,Short}' OR titletype = 'short';
     
 Which sql uses index and which are not?
 
