@@ -61,7 +61,7 @@ Then we create a table named *ratings*, the schema is shown below:
 
 with primary key *tconst*
 
-**Note**: If you don't know how to create those two table, the answer is in the `answer` file.
+**Note**: If you don't know how to create those two table, the answer is in the [answer](https://github.com/sjmsjmdsg/2400Lab/blob/master/answer/answer.txt) file.
 
 Finally, we can use `\copy` command to load the csv files into the table. An example could be:
 
@@ -137,15 +137,7 @@ By default, the name of index is "table_name + attr_name + idx", so here the ind
     
 Now, let's do the same searching again. Could you find the difference between two times? This table is small, assume we have a table will millions of rows that needs about an hour to search an outcome, how much time do we need after using index? 
 
-However, although usually the index can improve the effect of searching, but this may not be true when the table size is small. Now, let's do another searching:
-
-    SELECT COUNT(startyear) FROM basics WHERE startyear < 2009;
-
-Now let's create another index on attribute `startyear` and do the search again. Does the speed become faster?
-
-**Note:** the allocation of disk address for data is random for psql, so the result can be varied. You can try different years to see the difference. I cannot ensure you can see the different outcome.
-
-If the speed is not faster, then why? Let's use another command `EXPLAIN ANALYZE` to anslyse the process:
+**Extra Info:** we can use command `EXPLAIN ANALYZE` to anslyse the process:
 
     EXPLAIN ANALYZE SELECT COUNT(startyear) FROM basics WHERE startyear < 2009;
     
@@ -162,9 +154,7 @@ Then we may see a tree structure like below:
      Planning time: 0.079 ms
      Execution time: 205.960 ms
      
-This command can show the sql executing process from bottom to top. From *actual time* column, we can see the executing time in ms. If you see *Parallel Seq Scan*, that means the index is not used. If you see *Index Cond*, that means index is used. You can change the years to see different outcome. Sometimes the index may be not used even you create it. That because psql can automatically choose the optimal executing process, so when the table size is small, psql can choose to ignore the index [].
-
-You can also change *<* to *=* to see the differnece. When the table is small, the index searching time can be slower than parallel searching time sometimes, so the index cannot speed up the searching under this situation.
+This command can show the sql executing process from bottom to top. From *actual time* column, we can see the executing time in ms. If you see *Parallel Seq Scan*, that means the index is not used. If you see *Index Cond*, that means index is used.
 
 ### 2) Insert/Delete Operation
 
