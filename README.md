@@ -176,7 +176,7 @@ Consequently, using index when it can truly improve the performance of the datab
 
 In this part, we will try to see how multiple indexes are different from single index.
 
-Now, drop all the indexes and create a multi-indexes on basics's attributes `genres` and `titletype`:
+Now, drop all the indexes and create a multiple indexes on basics's attributes `genres` and `titletype`:
 
     CREATE INDEX ON basics(genres, titletype);
     
@@ -194,13 +194,13 @@ Now, try to execute five commands below:
     
 Which sql uses index and which are not?
 
-In fact, for the multi-indexes like above, the index of titletype is dependent on the index of genres. Thus, the index of genres can work along but index of titletype cannot.
+In fact, for the multiple indexes like above, the index of titletype is dependent on the index of genres. Thus, the index of genres can work along but index of titletype cannot.
 
 Then, how about to create two independent indexes for the two attributes? 
 
-Now, let's drop the multi-indexes above and create two indexes on the two attributes independently. Then, execute the above 5 commands again. What happened now?
+Now, let's drop the multiple indexes above and create two indexes on the two attributes independently. Then, execute the above 5 commands again. What happened now?
 
-Through the psql documentation, the multiple indexes have lots of limits [5]. The first one is what we have mentioned. The multi-indexes (x, y) cannot work when you want to just search under condition y. When you search the info under condition x, because multi-indexes (x, y)'s structure is complex than the single index, so it is still slower compared to use single index x. Besides, multi-indexes (x, y) cannot work under `OR` operation, but psql can combine single indexes x and y to do that. However, if your searching operations are mainly about both x and y, then multiple indexes are more effecient than the two single indexes. You can find more details [here](https://www.postgresql.org/docs/10/static/indexes-bitmap-scans.html)[6].
+Through the psql documentation, the multiple indexes have lots of limits [5]. The first one is what we have mentioned. The multiple indexes (x, y) cannot work when you want to just search under condition y. When you search the info under condition x, because multiple indexes (x, y)'s structure is complex than the single index, so it is still slower compared to use single index x. Besides, multiple indexes (x, y) cannot work under `OR` operation, but psql can combine single indexes x and y to do that. However, if your searching operations are mainly about both x and y, then multiple indexes are more effecient than the two single indexes. You can find more details [here](https://www.postgresql.org/docs/10/static/indexes-bitmap-scans.html)[6].
 
 Therefore, you should consider your tasks and index conditions before you set up the index!
 
