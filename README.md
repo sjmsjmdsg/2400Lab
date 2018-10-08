@@ -92,10 +92,10 @@ You can change the default path in the program, so that you don't need to enter 
 
 It allows user to input several times, input `exit` to exit.
 
-## Task3: Query Processing and Optimisation
+## Task3: Index Exploration
 The third lab is to learn about index.
 
-Through psql documentation, index is a method that can improve the searching speed of database []. Basically, the index will let database management system stores the disk address or data itself in special structure that can save the time of reading info from disk. Without index, the DBMS has to search the data by sequence so it will be very slow when searching the data among millions of rows. Through psql document, by default, the `CREATE INDEX` command will create B-tree index, but it also supports many other structures, which can be check [here](https://www.postgresql.org/docs/9.2/static/indexes-types.html) [].  Meanwhile, because index requires data storing in structure, it will also decrease the performance of inserting/updating/deleting the rows. We will try to see the effect of index in the following lab.
+Through psql documentation, index is a method that can improve the searching speed of database [2]. Basically, the index will let database management system stores the disk address or data itself in special structure that can save the time of reading info from disk. Without index, the DBMS has to search the data by sequence so it will be very slow when searching the data among millions of rows. Through psql document, by default, the `CREATE INDEX` command will create B-tree index, but it also supports many other structures, which can be check [here](https://www.postgresql.org/docs/9.2/static/indexes-types.html) [3].  Meanwhile, because index requires data storing in structure, it will also decrease the performance of inserting/updating/deleting the rows. We will try to see the effect of index in the following lab.
 
 ### 1) Searching Operation
 
@@ -160,7 +160,7 @@ This command can show the sql executing process from bottom to top. From *actual
 
 In this part, we will see the effect of insert/delete rows of index.
 
-You can find a file named *insert_delete.sql*, it is PL/pgSQL code which can insert and delete 100,000 rows to the basic. For the details of PL/pgSQL code, you can find info [here](https://postgres.cz/wiki/PL/pgSQL_(en)#Introduction_into_PL.2FpgSQL_language) []. However, it is not included in this course.
+You can find a file named *insert_delete.sql*, it is PL/pgSQL code which can insert and delete 100,000 rows to the basic. For the details of PL/pgSQL code, you can find info [here](https://postgres.cz/wiki/PL/pgSQL_(en)#Introduction_into_PL.2FpgSQL_language) [4]. However, it is not included in this course.
 
 Now, lets move all the indexes, and type `\i insert/delete.sql`. Remember the execute time.
 
@@ -200,12 +200,70 @@ Then, how about to create two independent indexes for the two attributes?
 
 Now, let's drop the multi-indexes above and create two indexes on the two attributes independently. Then, execute the above 5 commands again. What happened now?
 
-Through the psql documentation, the multiple indexes have lots of limits []. The first one is what we have mentioned. The multi-indexes (x, y) cannot work when you want to just search under condition y. When you search the info under condition x, because multi-indexes (x, y)'s structure is complex than the single index, so it is still slower compared to use single index x. Besides, multi-indexes (x, y) cannot work under `OR` operation, but psql can combine single indexes x and y to do that. However, if your searching operations are mainly about both x and y, then multiple indexes are more effecient than the two single indexes. You can find more details [here](https://www.postgresql.org/docs/10/static/indexes-bitmap-scans.html).
+Through the psql documentation, the multiple indexes have lots of limits [5]. The first one is what we have mentioned. The multi-indexes (x, y) cannot work when you want to just search under condition y. When you search the info under condition x, because multi-indexes (x, y)'s structure is complex than the single index, so it is still slower compared to use single index x. Besides, multi-indexes (x, y) cannot work under `OR` operation, but psql can combine single indexes x and y to do that. However, if your searching operations are mainly about both x and y, then multiple indexes are more effecient than the two single indexes. You can find more details [here](https://www.postgresql.org/docs/10/static/indexes-bitmap-scans.html)[6].
 
 Therefore, you should consider your tasks and index conditions before you set up the index!
 
-## Task4: Use SQL to Answer Simple Questions
+## Task4: Query Processing and Optimisation
+
+Different query can consume different time, though they may be mathematically equivalent. You can try the following 6 sqls that can give you a sense about this:
+
+    (1)
+    SELECT COUNT(*)
+    FROM basics NATURAL JOIN ratings
+    WHERE averagerating > 8.0 AND numvotes > 10000 AND startyear = 2010;
+    
+    (2)
+    SELECT COUNT(*)
+    FROM basics INNER JOIN ratings
+    ON averagerating > 8.0 AND numvotes > 10000 AND startyear = 2010 AND basics.tconst = ratings.tconst;
+    
+    (3)
+    SELECT COUNT(*)
+    FROM basics, ratings
+    WHERE averagerating > 8.0 AND numvotes > 10000 AND startyear =2010 AND basics.tconst = ratings.tconst;
+    
+    (4)
+    SELECT COUNT(*)
+    FROM
+    (SELECT * FROM ratings WHERE averagerating > 8.0 AND numvotes > 10000) AS gm
+    NATURAL JOIN
+    (SELECT * FROM basics WHERE startyear =2010) AS m2010;
+    
+    (5)
+    WITH gm AS (SELECT *
+            FROM ratings
+            WHERE averagerating > 8.0 AND numvotes > 10000),
+    m2010 AS (SELECT *
+          FROM basics
+          WHERE startyear =2010)
+    SELECT COUNT(*)
+    FROM m2010 NATURAL JOIN gm;
+    
+    (6)
+    SELECT COUNT(*)
+    FROM (SELECT tconst
+            FROM ratings
+            WHERE averagerating > 8.0 AND numvotes > 10000
+            INTERSECT
+            SELECT tconst
+            FROM basics
+            WHERE startyear = 2010) AS gm2010;
+            
+Remember drop your indexes. As the result, you should be able to see that the run time of the first 4 queries are similar, while the last two is slow.
+
 
 ## Reference
 
+[1]Postgresql, "PostgreSQL: Documentation: 9.2: COPY", Postgresql.org, 2018. [Online]. Available: https://www.postgresql.org/docs/9.2/static/sql-copy.html. [Accessed: 08- Oct- 2018].
+
+[2]Postgresql, "PostgreSQL: Documentation: 9.1: Indexes", Postgresql.org, 2018. [Online]. Available: https://www.postgresql.org/docs/9.1/static/indexes.html. [Accessed: 08- Oct- 2018].
+
+[3]Postgresql, "PostgreSQL: Documentation: 9.2: Index Types", Postgresql.org, 2018. [Online]. Available: https://www.postgresql.org/docs/9.2/static/indexes-types.html. [Accessed: 08- Oct- 2018].
+
+[4]Postgres, "PL/pgSQL (en) – PostgreSQL", Postgres.cz, 2018. [Online]. Available: https://postgres.cz/wiki/PL/pgSQL_(en)#Introduction_into_PL.2FpgSQL_language. [Accessed: 08- Oct- 2018].
+
+[5]Postgresql, "PostgreSQL: Documentation: 8.3: Combining Multiple Indexes", Postgresql.org, 2018. [Online]. Available: https://www.postgresql.org/docs/8.3/static/indexes-bitmap-scans.html. [Accessed: 08- Oct- 2018].
+
+[6]Postgresql, "PostgreSQL: Documentation: 10: 11.5. Combining Multiple Indexes", Postgresql.org, 2018. [Online]. Available: https://www.postgresql.org/docs/10/static/indexes-bitmap-scans.html. [Accessed: 08- Oct- 2018].
 
